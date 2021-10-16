@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  api:
+    container_name: nestjs-scheduler-api
+    image: nestjs-scheduler-api:latest
+    build:
+      context: .
+      target: production
+      dockerfile: ./apps/api/Dockerfile
+    environment:
+      - PORT:3333
+    ports:
+      - 3333:3333
+    networks:
+      - nestjs-scheduler
+    # volumes:
+    #   - .:/usr/src/app
+    #   - /usr/src/app/node_modules
+  runner:
+    depends_on:
+      - api
+    container_name: nestjs-scheduler-runner
+    image: nestjs-scheduler-runner:latest
+    build:
+      context: .
+      target: production
+      dockerfile: ./apps/runner/Dockerfile
+    environment:
+      - PORT=3334
+      - API=api
+      - API_PORT=3333
+    ports:
+      - 3334:3334
+    networks:
+      - nestjs-scheduler
+    # volumes:
+    #   - .:/usr/src/app
+    #   - /usr/src/app/node_modules
+networks:
+  nestjs-scheduler:
